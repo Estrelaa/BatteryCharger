@@ -1,9 +1,9 @@
-# Title: Battery Charger Alpha
-# Description: Recharges your Weapons when they run out of charge
-# Author: Estrela
-# APIVersion: 100033
-# AddonVersion: 1
-# Version: 0.1
+## Title: Battery Charger Alpha
+## Description: Recharges your Weapons when they run out of charge
+## Author: Estrela
+## APIVersion: 100033
+## AddonVersion: 1
+## Version: 0.1
 
 src/BatteryCharger.lua
 
