@@ -21,7 +21,6 @@ function BatteryCharger.ChargeWeapon(EquipmentSlot)
         SoulGemSlot = BatteryCharger.FindSoulGems()
         --Check its charge value to make sure it super low or depleted
         if (GetChargeInfoForItem(BAG_WORN, EQUIP_SLOT_MAIN_HAND) < BatteryCharger.ChargeTheshold) then
-            d("Charging item")
             ChargeItemWithSoulGem(BAG_WORN, EQUIP_SLOT_MAIN_HAND, BAG_BACKPACK, SoulGemSlot)
         end
     end
