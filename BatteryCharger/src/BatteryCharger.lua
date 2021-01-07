@@ -1,18 +1,31 @@
 -- Toplevel namespace that will hold everything
 BatteryCharger = {}
 
-BatteryCharger.name = "Battery Charger"
+BatteryCharger.name = "BatteryCharger"
 
-function BatteryCharger:Initalize()
+function BatteryCharger:TypeOfAttack(_, _, _,  _, ActionSlotType)
+    local SoulGemSlot
+    local MainHandChargeInformation
+    local OffhandChargeInformation
+    local ActiveWeapon, _
     
-end
+    if (ActionSlotType == 5 or ActionSlotType == 6) then
+        ActiveWeapon, _ = GetActiveWeaponPairInfo()
 
-function BatteryCharger.OnAddOnLoaded(event,  addonName)
-    -- As this event is fired on every addon load, make sure that the event is for our addon
-    if addonName == BatteryCharger.name then
-        BatteryCharger.Initalize()
+        if (ActiveWeapon == 1)then
+            if IsItemChargeable(BAG_WORN, EQUIP_SLOT_MAIN_HAND) then
+                --Check its charge value to make sure it super low or depleted
+                d(GetItemLink(BAG_WORN, EQUIP_SLOT_MAIN_HAND))
+            end
+        end
+        if (ActiveWeapon == 2) then
+            if  IsItemChargeable(BAG_WORN, EQUIP_SLOT_BACKUP_MAIN) then
+                --Check its charge value to make sure it super low or depleted
+                d(GetItemLink(BAG_WORN, EQUIP_SLOT_BACKUP_MAIN))
+            end
+        end
     end
 end
 
 --Register our OnAddOnLoaded function to the event manager
-EVENT_MANAGER:RegisterForEvent(BatteryCharger.name, EVENT_ADD_ON_LOADED, BatteryCharger.OnAddOnLoaded)
+EVENT_MANAGER:RegisterForEvent(BatteryCharger.name, EVENT_COMBAT_EVENT, BatteryCharger.TypeOfAttack)
