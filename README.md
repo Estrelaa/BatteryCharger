@@ -9,5 +9,5 @@ To edit the code, fork it, then clone the new fork using git. Open up the lua fi
 
 # My links
 
-[Website](kieranwinfield.co.uk)
+[Website](http://kieranwinfield.co.uk)
 [Github](https://github.com/Estrelaa)
