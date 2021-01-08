@@ -1,12 +1,11 @@
--- Toplevel namespace that will hold everything
 BatteryCharger = {}
 
-BatteryCharger.name = "BatteryCharger"
---If the charge left on the weapon is less than the value below, it will charge the weapon
+BatteryCharger.AddonName = "Battery Charger"
+--If the charge left on the weapon is less than the value below, we will charge the weapon
 BatteryCharger.ChargeTheshold = 3
 
--- We do this check to reduce the amount of times that FindSoulGems in called
-function BatteryCharger.IsWeaponAttack(AttackType)
+-- We do this check to reduce the amount of times that FindSoulGems in called 
+local function IsWeaponAttack(AttackType)
     if (AttackType == 5 or AttackType == 6) then
         return true
     else
@@ -14,20 +13,8 @@ function BatteryCharger.IsWeaponAttack(AttackType)
     end
 end
 
-function BatteryCharger.ChargeWeapon(EquipmentSlot)
-    local SoulGemSlot
-
-    if (IsItemChargeable(BAG_WORN, EQUIP_SLOT_MAIN_HAND)) then
-        SoulGemSlot = BatteryCharger.FindSoulGems()
-        --Check its charge value to make sure it super low or depleted
-        if (GetChargeInfoForItem(BAG_WORN, EQUIP_SLOT_MAIN_HAND) < BatteryCharger.ChargeTheshold) then
-            ChargeItemWithSoulGem(BAG_WORN, EQUIP_SLOT_MAIN_HAND, BAG_BACKPACK, SoulGemSlot)
-        end
-    end
-end
-
 -- Gets the first soul gem found in the player's inventory
-function BatteryCharger:FindSoulGems()
+local function FindSoulGems()
     local PlayerInventory = SHARED_INVENTORY:GenerateFullSlotData(nil,BAG_BACKPACK)
 
     for _, item in pairs(PlayerInventory) do
@@ -37,19 +24,35 @@ function BatteryCharger:FindSoulGems()
     end
 end
 
-function BatteryCharger:Main(_, _, _,  _, AttackType)
-    local ActiveWeapon, _
-    
-    if (BatteryCharger.IsWeaponAttack(AttackType)) then
-        ActiveWeapon, _ = GetActiveWeaponPairInfo()
+local function ChargeWeapon(EquipmentSlot)
+    local SoulGemSlot
 
-        if (ActiveWeapon == 1)then
-            BatteryCharger.ChargeWeapon(EQUIP_SLOT_MAIN_HAND)
-        end
-        if (ActiveWeapon == 2) then
-            BatteryCharger.ChargeWeapon(EQUIP_SLOT_BACKUP_MAIN)
+    if (IsItemChargeable(BAG_WORN, EQUIP_SLOT_MAIN_HAND)) then
+        SoulGemSlot = FindSoulGems()
+        --Check its charge value to make sure it super low or depleted
+        if (GetChargeInfoForItem(BAG_WORN, EQUIP_SLOT_MAIN_HAND) < BatteryCharger.ChargeTheshold) then
+            ChargeItemWithSoulGem(BAG_WORN, EQUIP_SLOT_MAIN_HAND, BAG_BACKPACK, SoulGemSlot)
+            d("Charge equiped weapon")
         end
     end
 end
 
-EVENT_MANAGER:RegisterForEvent(BatteryCharger.name, EVENT_COMBAT_EVENT, BatteryCharger.Main)
+
+local function Main(_, _, _,  _, AttackType)
+    local ActiveWeapon, _
+    
+    if (IsWeaponAttack(AttackType)) then
+        ActiveWeapon, _ = GetActiveWeaponPairInfo()
+
+        if (ActiveWeapon == 1)then
+            ChargeWeapon(EQUIP_SLOT_MAIN_HAND)
+        end
+        if (ActiveWeapon == 2) then
+            ChargeWeapon(EQUIP_SLOT_BACKUP_MAIN)
+        end
+    end
+end
+
+-- We use the combat event because it triggers numberous times a second which allows us to
+-- check the weapon charge frequenly without destroying peoples computers
+EVENT_MANAGER:RegisterForEvent(BatteryCharger.name, EVENT_COMBAT_EVENT, Main)
