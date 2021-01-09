@@ -1,8 +1,9 @@
 BatteryCharger = {}
 
-BatteryCharger.AddonName = "Battery Charger"
+BatteryCharger.AddonName = "BatteryCharger"
 --If the charge left on the weapon is less than the value below, we will charge the weapon
 BatteryCharger.ChargeTheshold = 3
+BatteryCharger.HasAnySoulGemsInBags = true
 
 -- We do this check to reduce the amount of times that FindSoulGems in called 
 local function IsWeaponAttack(AttackType)
@@ -19,26 +20,33 @@ local function FindSoulGems()
 
     for _, item in pairs(PlayerInventory) do
         if (IsItemSoulGem(SOUL_GEM_TYPE_FILLED,BAG_BACKPACK,item.slotIndex)) then
+            BatteryCharger.HasAnySoulGemsInBags = true
             return item.slotIndex
         end
+    end
+    -- We use a bool here so we don't spam the chat with our message.
+    if(BatteryCharger.HasAnySoulGemsInBags == true) then
+        d("Battery Charger: No soul gems found, unable to charge equiped weapon. Have you ran out?")
+        BatteryCharger.HasAnySoulGemsInBags = false
+        return nil
     end
 end
 
 local function ChargeWeapon(EquipmentSlot)
     local SoulGemSlot
 
-    if (IsItemChargeable(BAG_WORN, EQUIP_SLOT_MAIN_HAND)) then
+    if (IsItemChargeable(BAG_WORN, EquipmentSlot)) then
         SoulGemSlot = FindSoulGems()
-        --Check its charge value to make sure it super low or depleted
-        if (GetChargeInfoForItem(BAG_WORN, EQUIP_SLOT_MAIN_HAND) < BatteryCharger.ChargeTheshold) then
-            ChargeItemWithSoulGem(BAG_WORN, EQUIP_SLOT_MAIN_HAND, BAG_BACKPACK, SoulGemSlot)
-            d("Charge equiped weapon")
+        if (not (SoulGemSlot and nil)) then
+            --Check its charge value to make sure it super low or depleted
+            if (GetChargeInfoForItem(BAG_WORN, EquipmentSlot) < BatteryCharger.ChargeTheshold) then
+                ChargeItemWithSoulGem(BAG_WORN, EquipmentSlot, BAG_BACKPACK, SoulGemSlot)
+            end
         end
     end
 end
 
-
-local function Main(_, _, _,  _, AttackType)
+local function Main(_, _, _,  _, _, AttackType)
     local ActiveWeapon, _
     
     if (IsWeaponAttack(AttackType)) then
