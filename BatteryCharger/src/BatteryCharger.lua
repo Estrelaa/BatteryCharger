@@ -5,7 +5,8 @@ BatteryCharger.AddonName = "BatteryCharger"
 BatteryCharger.ChargeTheshold = 3
 BatteryCharger.HasAnySoulGemsInBags = true
 
--- We do this check to reduce the amount of times that FindSoulGems in called 
+-- We do this check to reduce the amount of times that FindSoulGems in called.
+-- An attacktype of 5 or 6 means that we are light or heavy attacking
 local function IsWeaponAttack(AttackType)
     if (AttackType == 5 or AttackType == 6) then
         return true
@@ -38,7 +39,7 @@ local function ChargeWeapon(EquipmentSlot)
     if (IsItemChargeable(BAG_WORN, EquipmentSlot)) then
         SoulGemSlot = FindSoulGems()
         if (not (SoulGemSlot and nil)) then
-            --Check its charge value to make sure it super low or depleted
+            --Check the weapon's charge value to make sure it super low or depleted
             if (GetChargeInfoForItem(BAG_WORN, EquipmentSlot) < BatteryCharger.ChargeTheshold) then
                 ChargeItemWithSoulGem(BAG_WORN, EquipmentSlot, BAG_BACKPACK, SoulGemSlot)
             end
@@ -62,5 +63,7 @@ local function Main(_, _, _,  _, _, AttackType)
 end
 
 -- We use the combat event because it triggers numberous times a second which allows us to
--- check the weapon charge frequenly without destroying peoples computers
+-- check the weapon charge frequenly without destroying peoples computers.
+-- It does mean that we need the IsWeaponAttack function.  We don't want to check the player
+-- bags 20+ times a second.
 EVENT_MANAGER:RegisterForEvent(BatteryCharger.name, EVENT_COMBAT_EVENT, Main)
