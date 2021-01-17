@@ -26,8 +26,9 @@ local function FindSoulGems()
         end
     end
     -- We use a bool here so we don't spam the chat with our message.
+    -- We get here only if no filled soul gems were found in the players bag
     if(BatteryCharger.HasAnySoulGemsInBags == true) then
-        d("Battery Charger: No soul gems found, unable to charge equiped weapon. Have you ran out?")
+        d("Battery Charger: No filled soul gems found in your bags, unable to charge equiped weapon.")
         BatteryCharger.HasAnySoulGemsInBags = false
         return nil
     end
@@ -38,7 +39,7 @@ local function ChargeWeapon(EquipmentSlot)
 
     if (IsItemChargeable(BAG_WORN, EquipmentSlot)) then
         SoulGemSlot = FindSoulGems()
-        if (not (SoulGemSlot and nil)) then
+        if (not (SoulGemSlot == nil)) then
             --Check the weapon's charge value to make sure it super low or depleted
             if (GetChargeInfoForItem(BAG_WORN, EquipmentSlot) < BatteryCharger.ChargeTheshold) then
                 ChargeItemWithSoulGem(BAG_WORN, EquipmentSlot, BAG_BACKPACK, SoulGemSlot)
