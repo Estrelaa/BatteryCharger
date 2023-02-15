@@ -1,8 +1,8 @@
 ## Title: Battery Charger
 ## Description: Automatically recharges your Weapons when they run out of charge, via soulgems in your bag
 ## Author: Estrela
-## APIVersion: 100033
+## APIVersion: 101036
 ## AddonVersion: 1
-## Version: 1.1
+## Version: 1.3
 
 src/BatteryCharger.lua
